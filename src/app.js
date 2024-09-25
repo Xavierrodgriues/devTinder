@@ -1,17 +1,33 @@
 const express = require('express');
 const app = express();
 const connectDB = require('./config/database');
-const User = require("./models/user")
+const User = require("./models/user");
+const {validationSignUp} = require("./utils/validation");
+const bcrypt = require('bcrypt');
+const validator = require('validator');
 
 // middleware to convert json
 app.use(express.json());
 
 // adding User to the database
 app.post("/signup", async (req, res) => {
-    const userObj = req.body;
-
+    
     try{
-        const user = new User(userObj);
+        validationSignUp(req);
+        const {firstName, lastName, emailId, age, gender} = req.body;
+        // Encrypt password
+        const password = req.body.password;
+        const hashPassword = await bcrypt.hash(password, 10);
+
+
+        const user = new User({
+            firstName,
+            lastName,
+            emailId,
+            password: hashPassword,
+            age,
+            gender
+    });
         await user.save();
     
         res.send("Data stored")
@@ -21,6 +37,35 @@ app.post("/signup", async (req, res) => {
     console.log(req.body);
 
     
+});
+
+// login user 
+app.post('/login', async (req, res) => {
+    const {emailId, password} = req.body;
+    try{
+
+        if(emailId == "" || password == ""){
+            throw new Error("Input cant be Empty");
+        }else if(!validator.isEmail(emailId)){
+            throw new Error("Invalid email");
+        }
+
+        const user = await User.findOne({emailId: emailId});
+        if(!user){
+            throw new Error("User not found");
+        }
+
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+
+        if(isPasswordValid){
+            res.send("Login Success");
+        }else{
+            throw new Error("Password is invalid");
+        }
+
+    }catch(err){
+        res.status(400).send("Error: "+ err.message);
+    }
 });
 
 // get feed api

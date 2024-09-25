@@ -12,7 +12,7 @@ const userSchema = mongoose.Schema({
     lastName :{
         type: String,
         minLength: 2,
-        maxLength: 50
+        maxLength: 50,
     },
     emailId: {
         type: String,
