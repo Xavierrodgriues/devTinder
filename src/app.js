@@ -53,12 +53,25 @@ app.delete("/deleteUser", async (req, res) => {
 app.patch("/updateUser", async (req, res) => {
     const user = req.body.id;
     const data = req.body;
-    const response = await User.findByIdAndUpdate(user, data, {new: true});
-    if(response){
-        res.send("User Details Updated");
-    }else{
-        res.status(400).send("Something went wrong");
+
+    try{
+
+    const updateAllowed = [
+        "id", "firstName", "lastName", "password", "age", "gender"
+    ];
+
+    const isUpdateAllowed = Object.keys(data).every((k) => updateAllowed.includes(k));
+
+    if(!isUpdateAllowed){
+        throw new Error("Failed to Update Data");
     }
+
+    const response = await User.findByIdAndUpdate(user, data, {new: true, runValidators: true});
+    res.send("User Details Updated");
+
+}catch(err){
+    res.status(400).send(err.message);
+}
 });
 
 
