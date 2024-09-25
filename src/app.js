@@ -3,15 +3,12 @@ const app = express();
 const connectDB = require('./config/database');
 const User = require("./models/user")
 
+// middleware to convert json
+app.use(express.json());
+
+// adding User to the database
 app.post("/signup", async (req, res) => {
-    const userObj = {
-        firstName: "Xavier",
-        lastName: "Rodgriues",
-        emailId: "xavier@gmail.com",
-        password: "12345",
-        age: 21,
-        gender: "Male",
-    };
+    const userObj = req.body;
 
     try{
         const user = new User(userObj);
@@ -21,8 +18,51 @@ app.post("/signup", async (req, res) => {
     }catch(err){
         res.status(500).send("Failed to store data "+ err.message)
     }
+    console.log(req.body);
+
+    
 });
 
+// get feed api
+app.get("/feed", async (req, res) => {
+
+    try{
+
+        const user = await User.find();
+        res.send(user);
+      
+    }catch(err){
+        res.status(500).send("Failed to fetch data")
+    }
+    
+
+});
+
+// delete User from the database
+app.delete("/deleteUser", async (req, res) => {
+    const user = req.body;
+    const response = await User.findByIdAndDelete(user)
+    if(response){
+        res.send("User deleted Successfully");
+    }else{
+        res.status(400).send("User not found");
+    }
+});
+
+// Update data from database
+app.patch("/updateUser", async (req, res) => {
+    const user = req.body.id;
+    const data = req.body;
+    const response = await User.findByIdAndUpdate(user, data, {new: true});
+    if(response){
+        res.send("User Details Updated");
+    }else{
+        res.status(400).send("Something went wrong");
+    }
+});
+
+
+//connect database then listen server
 connectDB()
 .then(()=>{
     console.log("Database connected Successfully");
