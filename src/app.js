@@ -5,9 +5,15 @@ const User = require("./models/user");
 const {validationSignUp} = require("./utils/validation");
 const bcrypt = require('bcrypt');
 const validator = require('validator');
+const cookieParser = require('cookie-parser');
+const jwt = require("jsonwebtoken");
+const {auth} = require("../middleware/auth");
 
 // middleware to convert json
 app.use(express.json());
+
+// middleware to read cookie
+app.use(cookieParser());
 
 // adding User to the database
 app.post("/signup", async (req, res) => {
@@ -58,6 +64,9 @@ app.post('/login', async (req, res) => {
         const isPasswordValid = await bcrypt.compare(password, user.password);
 
         if(isPasswordValid){
+            const token = await jwt.sign({_id: user._id}, "devTinder$15", {expiresIn: '7d'});
+            console.log(token);
+            res.cookie("token", token);
             res.send("Login Success");
         }else{
             throw new Error("Password is invalid");
@@ -82,6 +91,17 @@ app.get("/feed", async (req, res) => {
     
 
 });
+
+app.get("/profile", auth, async (req, res) => {
+    res.send("Accessed Profile Page");
+});
+
+app.get("/connection", auth, async (req, res) => {
+    const _id = req.user;
+    const user = await User.findById(_id);
+    res.send(user.firstName + " Sended the request");
+    // res.send(req.user);
+})
 
 // delete User from the database
 app.delete("/deleteUser", async (req, res) => {
