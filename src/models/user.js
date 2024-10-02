@@ -1,7 +1,6 @@
-
 const mongoose = require('mongoose');
 const validator = require('validator');
-
+const jwt = require('jsonwebtoken');
 const userSchema = mongoose.Schema({
     firstName :{
         type: String,
@@ -25,6 +24,9 @@ const userSchema = mongoose.Schema({
                 throw new Error("Email is not valid: " + value);
             }
         }
+    },
+    photoUrl: {
+        type: String
     },
     password: {
         type: String,
@@ -50,10 +52,22 @@ const userSchema = mongoose.Schema({
             }
         }
     },
+    about: {
+        type: String
+    },
+    skills: {
+        required : true,
+        type: Array,
+    }
 },{
     timestamps: true
 }
 );
+
+userSchema.methods.genToken = async function(){
+    const user = this;
+    return await jwt.sign({_id: user._id}, "devTinder$15", {expiresIn: '7d'});
+}
 
 // const User = mongoose.model("User", userSchema);
 

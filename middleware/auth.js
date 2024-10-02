@@ -1,15 +1,21 @@
 const jwt = require('jsonwebtoken');
+const User = require("../src/models/user");
 
 const auth = async (req, res, next) => {
     try{
-        const token = await req.cookies.token;
-        if (token) {
-            const decoded = await jwt.verify(token, "devTinder$15");
-            req.user = decoded;
-            next();
-        } else {
-                throw new Error("Unauthorized user");
-            }
+        const cookies = await req.cookies;
+        const { token } = cookies;
+        // console.log(token)
+        if(!token){
+            throw new Error("invalid token");
+        }
+        const msg = await jwt.verify(token, "devTinder$15");
+        const user = await User.findById(msg._id);
+        if(!user){
+            throw new Error("User not found");
+        }
+        req.user = user;
+        next()
     }catch(err){
         res.status(400).send(err.message)
     }
