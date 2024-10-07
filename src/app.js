@@ -14,10 +14,14 @@ app.use(cookieParser());
 const {authRouter} = require("./router/auth");
 const {profileRouter} = require("./router/profile");
 const {reqRouter} = require("./router/request");
+const forgotPasswordRouter = require("./router/forgotPassword");
+const { userRouter } = require('./router/user');
 
 app.use("/", authRouter);
 app.use("/", profileRouter);
 app.use("/", reqRouter);
+app.use("/", forgotPasswordRouter);
+app.use("/", userRouter);
 
 //connect database then listen server
 connectDB()
@@ -31,5 +35,6 @@ connectDB()
 })
 .catch((err)=>{
     console.log("Database cannot be connected")
+    console.log(err)
 })
 

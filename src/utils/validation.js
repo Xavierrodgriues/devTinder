@@ -22,8 +22,15 @@ const validateEditProfileData = (req, res) => {
 
 }
 
+const validateForgotPassword = (req, res) => {
+    const allowedField = ["password"];
+    const isEditAllowed = Object.keys(req.body).every(field => allowedField.includes(field));
+    return isEditAllowed;
+}
+
 
 module.exports = {
     validationSignUp,
-    validateEditProfileData
+    validateEditProfileData,
+    validateForgotPassword
 }
