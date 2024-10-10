@@ -4,7 +4,7 @@ const {auth} = require("../../middleware/auth");
 const { validateEditProfileData } = require("../utils/validation");
 
 profileRouter.get("/profile/view", auth, async (req, res) => {
-    res.send("Accessed Profile Page");
+    res.json({data: req.user});
 });
 
 profileRouter.patch("/profile/edit", auth, async (req, res) => {
