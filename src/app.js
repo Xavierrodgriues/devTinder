@@ -3,6 +3,12 @@ const app = express();
 const connectDB = require('./config/database');
 const User = require("./models/user");
 const cookieParser = require('cookie-parser');
+const cors = require("cors");
+
+app.use(cors({
+    origin: ["http://localhost:5173"], // whitelisting the domain name, telling the backend about the frontend
+    credentials: true
+}));
 
 // middleware to convert json
 app.use(express.json());

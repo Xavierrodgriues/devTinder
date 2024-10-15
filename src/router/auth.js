@@ -57,7 +57,7 @@ authRouter.post('/login', async (req, res) => {
             const token = await user.genToken();
             // console.log(token);
             res.cookie("token", token);
-            res.send("Login Success");
+            res.send(user);
         }else{
             throw new Error("Password is invalid");
         }

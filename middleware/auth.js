@@ -7,7 +7,7 @@ const auth = async (req, res, next) => {
         const { token } = cookies;
         // console.log(token)
         if(!token){
-            throw new Error("invalid token");
+            return res.status(401).send("Please Login");
         }
         const msg = await jwt.verify(token, "devTinder$15");
         const user = await User.findById(msg._id);
