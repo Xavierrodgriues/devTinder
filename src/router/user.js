@@ -4,7 +4,7 @@ const {auth} = require("../../middleware/auth");
 const ConnectionRequest = require("../models/connectionRequest");
 const User = require("../models/user");
 
-const USER_SAFE_DATA = "firstName lastName age about gender skills"
+const USER_SAFE_DATA = "firstName lastName age about gender skills photoUrl"
 
 // get all the pending connections requests of logged in users
 userRouter.get("/user/requests/received", auth, async (req, res) => {
@@ -40,13 +40,14 @@ userRouter.get("/user/connections", auth, async (req, res) => {
         .populate("toUserId", USER_SAFE_DATA); 
 
         const data = connectionRequest.map((row) => {
-            if(row.fromUserId._id.equals(loggedInUser._id)){ // or convert the idea into String using toString()
+            if(row.fromUserId._id.toString() === loggedInUser._id.toString()){ // or convert the idea into String using toString()
                 return row.toUserId
             }
             return row.fromUserId
         });
+        console.log(data);
 
-        res.status(200).json({message: "Data sended", data: data});
+        res.status(200).json({message: "Data sended", data});
     }catch(err){
         res.status(400).send(err.message);
     }

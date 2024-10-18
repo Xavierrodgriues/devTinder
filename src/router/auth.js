@@ -24,9 +24,15 @@ authRouter.post("/signup", async (req, res) => {
             age,
             gender
     });
-        await user.save();
+        const savedUser = await user.save();
+        const token = await savedUser.genToken();
+        // console.log(token);
+        res.cookie("token", token, {
+            expires: new Date(Date.now() + 8 * 3600000)
+        });
+        
     
-        res.send("Data stored")
+        res.json({message:"Data send" ,data:savedUser});
     }catch(err){
         res.status(500).send("Failed to store data "+ err.message)
     }
@@ -56,7 +62,9 @@ authRouter.post('/login', async (req, res) => {
         if(isPasswordValid){
             const token = await user.genToken();
             // console.log(token);
-            res.cookie("token", token);
+            res.cookie("token", token, {
+                expires: new Date(Date.now() + 8 * 3600000)
+            });
             res.send(user);
         }else{
             throw new Error("Password is invalid");

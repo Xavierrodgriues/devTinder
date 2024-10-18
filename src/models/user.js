@@ -40,12 +40,12 @@ const userSchema = mongoose.Schema({
     },
     age: {
         type: Number,
-        required: true,
+        // required: true,
         trim: true
     },
     gender: {
         type: String,
-        required: true,
+        // required: true,
         validate(value){
             if(!['male', "female", "others"].includes(value)){
                 throw new Error("Incorrect input");
@@ -56,7 +56,7 @@ const userSchema = mongoose.Schema({
         type: String
     },
     skills: {
-        required : true,
+        // required : true,
         type: Array,
     }
 },{
